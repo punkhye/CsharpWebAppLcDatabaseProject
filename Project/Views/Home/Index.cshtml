@@ -1,8 +1,52 @@
-﻿@{
+﻿@model IEnumerable<S.Data.Entities.Screening>
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@using Microsoft.AspNetCore.Identity
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">ASP.NET C# Web Application: Screenings Catalog</h1>
+   
 </div>
+
+<div class="text-center">
+<p>
+    This ASP.NET C# web application is designed for managing and displaying a screenings catalog.
+    It enables users to organize, view, and interact with data related to movies, cinemas,
+    and their respective screenings. The application features a user-friendly interface and
+    offers role-based authentication to cater to different levels of access.
+</p>
+
+</div>
+
+<h2>Key Features</h2>
+<ul>
+    <li><strong>Movies Table:</strong> Contains details such as title, genre, duration, and release date.</li>
+    <li><strong>Cinemas Table:</strong> Includes cinema name, location, and capacity.</li>
+    <li><strong>Screenings Table:</strong> Represents the relationships between movies and cinemas, with additional details like screening time and date.</li>
+</ul>
+
+<h2>Authentication and Role-Based Access</h2>
+<ul>
+    <li><strong>Level 1 (Guest):</strong> Not registered users can view all tables (Movies, Cinemas, Screenings) but cannot make any modifications.</li>
+    <li><strong>Level 2 (Registered User):</strong> Registered users can view, sort, and filter tables to find specific information.</li>
+    <li><strong>Level 3 (Administrator):</strong> Admins can add, edit, and delete records in all tables.</li>
+</ul>
+
+<h3>Getting Started</h3>
+@if (SignInManager.IsSignedIn(User))
+{
+    <p>Welcome back, <b>@User.Identity.Name</b>! Use the navigation bar to access the Movies, Cinemas, and Screenings tables.</p>
+}
+else
+{
+    <p>
+        <a href="/Identity/Account/Login">Log in</a> or <a href="/Identity/Account/Register">Register</a> to unlock additional features!
+    </p>
+}
+
