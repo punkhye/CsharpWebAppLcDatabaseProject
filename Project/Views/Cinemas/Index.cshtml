@@ -1,0 +1,125 @@
+﻿@model IEnumerable<S.Data.Entities.Cinema>
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@using Microsoft.AspNetCore.Identity
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Index";
+
+    var queryTotalSeatsParams = new Dictionary<string, string>
+{
+    { "sortOrder", ViewBag.TotalSeatsSortParam },
+    { "nameSort", ViewBag.NameSortParam },
+
+};
+
+    var queryNameParams = new Dictionary<string, string>
+{
+    { "sortOrder", ViewBag.NameSortParam },
+    { "searchName", ViewBag.NameSearch },
+
+};
+
+}
+
+<h1>Cinemas</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <form> <button class="btn btn-primary" asp-action="Create"> >Add a cinema</button></form>
+    </p>
+
+
+    <br></br>
+}
+
+@if (SignInManager.IsSignedIn(User)){
+    <div>
+        <form class=" d-flex" asp-action="Index" asp-controller="Cinemas">
+            <input name="searchNameString" class="form-control me-1" type="search" placeholder="Name" aria-label="Search"></input>
+            <button class="btn btn-dark" type="submit">Search by name</button>
+        </form>
+
+
+    </div>
+    <br></br>
+
+    <div>
+        <form class=" d-flex" asp-action="Index" asp-controller="Cinemas">
+            <input name="searchAddressString" class="form-control me-1" type="search" placeholder="Address" aria-label="Search"></input>
+            <button class="btn btn-dark" type="submit">Search by address</button>
+        </form>
+    </div>
+
+    <br></br>
+
+    <div>
+        <a asp-action="Index" class="text-dark">Back to the full list. </a>
+    </div>
+}
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @* @Html.DisplayNameFor(model => model.Name)*@
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-action="Index" asp-all-route-data="queryNameParams">Name</a>
+                }else{
+                    @Html.DisplayNameFor(model => model.Name)
+                }
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfHalls)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Website)
+            </th>
+            <th>
+                @* @Html.DisplayNameFor(model => model.TotalSeats) *@
+                @if (SignInManager.IsSignedIn(User)){
+                    <a asp-action="Index" asp-all-route-data="queryTotalSeatsParams">Total Seats</a>
+                }else{
+                    @Html.DisplayNameFor(model => model.TotalSeats)
+                }
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberOfHalls)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Website)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalSeats)
+                </td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+                }
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,130 @@
+﻿﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@model IEnumerable<S.Data.Entities.Movie>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "Index";
+
+    var queryTitleParams = new Dictionary<string, string>
+{
+    { "sortOrder", ViewBag.TitleSortParam },
+    { "searchTitle", ViewBag.TitleSearch },
+
+};
+    var queryReleaseDateParams = new Dictionary<string, string>
+{
+    { "sortOrder", ViewBag.ReleaseDateSortParam },
+    { "searchTitle", ViewBag.TitleSearch },
+};
+}
+
+
+
+<h1>Movies</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <form> <button class="btn btn-primary" asp-action="Create"> >Add a movie</button></form>
+    </p>
+
+    <br></br>
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div>
+        <form class=" d-flex" asp-action="Index" asp-controller="Movies">
+            <input name="searchNameString" class="form-control me-1" type="search" placeholder="Name" aria-label="Search"></input>
+            <button class="btn btn-dark" type="submit">Search by name</button>
+        </form>
+
+
+    </div>
+    <br></br>
+
+    <div>
+        <form class=" d-flex" asp-action="Index" asp-controller="Movies">
+            <input name="searchGenreString" class="form-control me-1" type="search" placeholder="Genre" aria-label="Search"></input>
+            <button class="btn btn-dark" type="submit">Search by genre</button>
+        </form>
+    </div>
+
+    <br></br>
+
+    <div>
+        <a asp-action="Index" class="text-dark">Back to the full list. </a>
+    </div>
+}
+
+<br></br>
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+
+            <th>
+                @* <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParm"]">@Html.DisplayNameFor(model => model.Title)</a> *@
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-action="Index" asp-all-route-data="queryTitleParams">Title</a> 
+                }
+                else{
+                    @Html.DisplayNameFor(model => model.Title)
+                }
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
+            <th>
+                @* <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">@Html.DisplayNameFor(model => model.ReleaseDate)</a> *@
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-action="Index" asp-all-route-data="queryReleaseDateParams">Release date</a>
+                }else{
+                    @Html.DisplayNameFor(model => model.ReleaseDate)
+                }
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration) 
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleaseDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration) min
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+            }
+        </tr>
+}
+    </tbody>
+</table>
+
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, searchTitle = ViewBag.TitleSearch, sortOrder = ViewBag.SortOrder }))
